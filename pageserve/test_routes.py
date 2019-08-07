@@ -65,6 +65,7 @@ EXAMPLE_POSTS = [
      'event_id': 'valid_post_id',
      'text': 'example post 2.'}]
 EXAMPLE_EVENT_ID = '123456789123456789123456'
+DIFFERENT_EVENT_ID = '987654321987654321654321'
 EXAMPLE_EVENTS = [
     {'_id': EXAMPLE_EVENT_ID,
      'name': 'valid_event',
@@ -72,7 +73,7 @@ EXAMPLE_EVENTS = [
      'event_time': 'soon',
      'author': 'app_user',
      'created_at': 'in the past'},
-    {'_id': '987654321987654321654321',
+    {'_id': DIFFERENT_EVENT_ID,
      'name': 'valid_event',
      'description': 'this event is valid too',
      'event_time': 'soon',
@@ -331,7 +332,7 @@ class TestQueryEventsByIDRoute(TestCase):
         self.client = app.app.test_client()
         self.expected_url = app.app.config['EVENTS_ENDPOINT']
 
-    @patch('app.has_edit_access', MagicMock(return_value=True))
+    @patch('app.is_organizer', MagicMock(return_value=True))
     @requests_mock.Mocker()
     def test_query_existing_event(self, mock_requests):
         """Test querying for existing event."""
@@ -347,7 +348,7 @@ class TestQueryEventsByIDRoute(TestCase):
         self.assertContext('events', EXAMPLE_EVENTS[0])
         self.assertContext('app_config', app.app.config)
 
-    @patch('app.has_edit_access', MagicMock(return_value=True))
+    @patch('app.is_organizer', MagicMock(return_value=True))
     @requests_mock.Mocker()
     def test_query_no_event_found(self, mock_requests):
         """Test querying for nonexisting event."""
